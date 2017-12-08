@@ -1,0 +1,56 @@
+---
+title: "Developing Data Products\nCourse Project"
+author: "Yang Zhang"
+date: "8/28/2017"
+output: ioslides_presentation
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE)
+```
+
+## Introduction
+
+In this course project, I am going to develop a shiny app that uses the [IMDB 5000 dataset](https://data.world/popculture/imdb-5000-movie-dataset) to explore the US movie market since 1990. By analyzing the annul movie production, profitability ratio, and IMDB score, the app aims at providing certain guidance to movie investors based on their budget. 
+
+* The app developed for this project is hosted on [Shiny](https://yzhang3142.shinyapps.io/imdb_5000_movie_app/).
+* The source code of this project can be found at [GitHub](https://github.com/yzhang3142/coursera_data_scientist/tree/master/09_developing_data_products/week4/course_project).
+
+## IMDB 5000 Movie Dataset
+
+```{r load_packages, warning = FALSE, message = FALSE}
+library(tidyverse)
+```
+
+The original dataset contains 27 variables for 5043 movies. 
+
+```{r data_summary, warning = FALSE, message = FALSE, echo = TRUE}
+all_movies <- read_csv("./data/IMDB_5000_Movies_Dataset.csv")
+dim(all_movies)
+```
+
+The app would focus on the following features for US movies since 1990 only.
+
+* `title_year` - Movie release year 
+* `genres` - Movie type
+* `imdb_scores` - IMDB score
+* `budget` - Movie budget in million dollars
+* `gross` - Movie gross revenue in million dollars
+
+## App Functionality
+
+The app provides two sliderbars for data filtering. One can use the **release year** sliderbar to select the movies released during a specific year range and use the **budget** sliderbar to further filter down the data with certain budget range. 
+
+The results are shown in four tabs:
+
+* Annual Production
+* Annual Genre Production
+* Annual Production
+* Annual Production
+
+## Sample Results
+
+```{r result_sample, out.width = "750px"}
+knitr::include_graphics("./app_screenshot.PNG")
+```
+

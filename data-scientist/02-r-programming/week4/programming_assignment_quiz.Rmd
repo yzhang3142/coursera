@@ -1,0 +1,80 @@
+---
+title: |
+  | R Programming
+  | Week 4 - Programming Assignment Quiz
+author: "Yang Zhang"
+date: "9/1/2017"
+output: html_document
+---
+
+```{r setup, include = FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r source_code, include = FALSE}
+setwd("~/Documents/OpenCourse/Coursera/Data_Science/2_R_Programming/week4")
+source("~/Documents/OpenCourse/Coursera/Data_Science/2_R_Programming/week4/programming_assignment.R")
+```
+
+## Question 1
+
+```{r}
+best("SC", "heart attack")
+```
+
+## Question 2
+
+```{r}
+best("NY", "pneumonia")
+```
+
+## Question 3
+
+```{r}
+best("AK", "pneumonia")
+```
+
+## Question 4
+
+```{r}
+rankhospital("NC", "heart attack", "worst")
+```
+
+## Question 5
+
+```{r}
+rankhospital("WA", "heart attack", 7)
+```
+
+## Question 6
+
+```{r}
+rankhospital("TX", "pneumonia", 10)
+```
+
+## Question 7
+
+```{r}
+rankhospital("NY", "heart attack", 7)
+```
+
+## Question 8
+
+```{r}
+r <- rankall("heart attack", 4)
+as.character(subset(r, state == "HI")$hospital)
+```
+
+## Question 9
+
+```{r}
+r <- rankall("pneumonia", "worst")
+as.character(subset(r, state == "NJ")$hospital)
+```
+
+## Question 10
+
+```{r}
+r <- rankall("heart failure", 10)
+as.character(subset(r, state == "NV")$hospital)
+```

@@ -1,0 +1,95 @@
+---
+title: |
+  | R Programming
+  | Week 2 - Programming Assignment Quiz
+author: "Yang Zhang"
+date: "9/1/2017"
+output: html_document
+---
+
+```{r setup, include = FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r load_source, include = FALSE}
+setwd("~/Documents/OpenCourse/Coursera/Data_Science/2_R_Programming/week2")
+source("assignment_source.R")
+```
+
+## Question 1
+
+```{r}
+pollutantmean("specdata", "sulfate", 1:10)
+```
+
+## Question 2
+
+```{r}
+pollutantmean("specdata", "nitrate", 70:72)
+```
+
+## Question 3
+
+```{r}
+pollutantmean("specdata", "sulfate", 34)
+```
+
+## Question 4
+
+```{r}
+pollutantmean("specdata", "nitrate")
+```
+
+## Question 5
+
+```{r}
+cc <- complete("specdata", c(6, 10, 20, 34, 100, 200, 310))
+print(cc$nobs)
+```
+
+## Question 6
+
+```{r}
+cc <- complete("specdata", 54)
+print(cc$nobs)
+```
+
+## Question 7
+
+```{r}
+set.seed(42)
+cc <- complete("specdata", 332:1)
+use <- sample(332, 10)
+print(cc[use, "nobs"])
+```
+
+## Question 8
+
+```{r}
+cr <- corr("specdata")                
+cr <- sort(cr)                
+set.seed(868)                
+out <- round(cr[sample(length(cr), 5)], 4)
+print(out)
+```
+
+## Question 9
+
+```{r}
+cr <- corr("specdata", 129)                
+cr <- sort(cr)                
+n <- length(cr)                
+set.seed(197)                
+out <- c(n, round(cr[sample(n, 5)], 4))
+print(out)
+```
+
+## Question 10
+
+```{r}
+cr <- corr("specdata", 2000)                
+n <- length(cr)                
+cr <- corr("specdata", 1000)                
+cr <- sort(cr)
+print(c(n, round(cr, 4)))
+```

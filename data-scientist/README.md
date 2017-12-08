@@ -1,2 +1,2 @@
-# Coursera - Data Scientist Specification
+# Data Scientist Specification by John Hopkins University
 

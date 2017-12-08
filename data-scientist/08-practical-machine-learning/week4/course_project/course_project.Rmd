@@ -1,0 +1,139 @@
+---
+title: "Practical Machine Learning - Course Project"
+author: "Yang Zhang"
+date: "8/29/2017"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Introduction
+
+### Background
+
+Using devices such as Jawbone Up, Nike FuelBand, and Fitbit it is now possible to collect a large amount of data about personal activity relatively inexpensively. These type of devices are part of the quantified self movement – a group of enthusiasts who take measurements about themselves regularly to improve their health, to find patterns in their behavior, or because they are tech geeks. One thing that people regularly do is quantify how much of a particular activity they do, but they rarely quantify how well they do it. In this project, our goal will be to use data from accelerometers on the belt, forearm, arm, and dumbell of 6 participants. They were asked to perform barbell lifts correctly and incorrectly in 5 different ways. More information is available from the website here: http://web.archive.org/web/20161224072740/http:/groupware.les.inf.puc-rio.br/har (see the section on the Weight Lifting Exercise Dataset).
+
+### Data Source
+
+The training data for this project are available here:
+
+https://d396qusza40orc.cloudfront.net/predmachlearn/pml-training.csv
+
+The test data are available here:
+
+https://d396qusza40orc.cloudfront.net/predmachlearn/pml-testing.csv
+
+The data for this project come from this source: 
+
+http://web.archive.org/web/20161224072740/http:/groupware.les.inf.puc-rio.br/har
+
+## Data Processing
+
+### Data Importing
+
+```{r import_data, warning = FALSE, message = FALSE}
+# Import packages --------------------------------------------------------------
+library(tidyverse)
+library(rpart)
+library(rpart.plot)
+library(randomForest)
+library(caret)
+
+# Import data ------------------------------------------------------------------
+set.seed(2017-08-29)
+training <- read_csv("./data/pml-training.csv", na = c("NA", ""))
+testing <- read_csv("./data/pml-testing.csv", na = c("NA", ""))
+```
+
+First, the datasets are downloaded to the local drive and imported into the R session. The `training` and `testing` data frames contain `r dim(training)[1]` and `r dim(testing)[1]` observations of `r dim(training)[2]` features respectively. 
+
+### Data Cleaning
+
+A quick check of the data frames shows a lot of missing values for certain features. These features have no contribution to our statistical model and will be removed based on a threshold of 0.75 NA ratio. In addition, we will also remove the user identity features and omit the observations that contain any `NA` value in other remaining features. 
+
+```{r clean_up_data}
+# Data Cleaning ----------------------------------------------------------------
+# str(training)
+# Remove columns with NA values
+selected_features <- sapply(training, function(feature) {
+  if (sum(is.na(feature)) / length(feature) > 0.75) {
+    FALSE
+  } else {
+    TRUE
+  }
+})
+
+# Remove columns with identity information
+selected_features[1:7] <- FALSE
+
+# Remove NA rows
+training <- na.omit(training[selected_features])
+testing <- na.omit(testing[selected_features])
+```
+
+### Data Splitting
+
+For cross validation purpose, we are going to split the original `training` data frame into two new data frames, `training` and `probing`, which contains 75% and 25% of the data respectively.
+
+```{r data_spliting}
+# Splitting the data -----------------------------------------------------------
+inTrain <- createDataPartition(training$classe, p = 0.75, list = FALSE)
+probing <- training[-inTrain, ]
+training <- training[inTrain, ]
+```
+
+## Modeling
+
+In this section, we are going to create two statistical models, classification tree and random forest, on the `trainig` data and evaluate their accuracy using the `probing` data.
+
+### Classification Tree
+
+First, let's create a model using classification tree.
+
+```{r ct_fit, warning = FALSE, message = FALSE, cache = TRUE}
+ct_fit <- train(classe ~ ., data = training, method = "rpart")
+ct_fit
+```
+
+Use the `probing` data frame to evaluate the accuracy of the model.
+
+```{r show_ct_fit_cm}
+# Check model accuracy ---------------------------------------------------------
+ct_fit_cm <- confusionMatrix(predict(ct_fit, probing), probing$classe)
+ct_fit_cm
+```
+
+Based on the result, the out of sample error rate of this classification tree model is `r round(1 - ct_fit_cm$overall[1], 2)`.
+
+### Random Forest
+
+Second, let's create another model using random forest. 
+
+```{r rf_fit, warning = FALSE, message = FALSE, cache = TRUE}
+fit_control <- trainControl(method = "cv", number = 5)
+rf_fit <- train(classe ~ .,
+                data = training,
+                method = "rf",
+                trControl = fit_control)
+rf_fit
+```
+
+Again, use the `probing` data frame to evaluate the accuracy of the model.
+
+```{r}
+# Check model accuracy ---------------------------------------------------------
+rf_fit_cm <- confusionMatrix(predict(rf_fit, probing), probing$classe)
+rf_fit_cm
+```
+
+Based on the result, the out of sample error rate of this random forest model is `r round(1 - rf_fit_cm$overall[1], 2)`.
+
+## Model Application
+
+According to the analysis above, the random forest model shows a more accurate prediction. Thus, we will use it to predict the `classe` value of the observations in the `testing` data frame. 
+
+```{r prediction}
+predict(rf_fit, newdata = testing)
+```
